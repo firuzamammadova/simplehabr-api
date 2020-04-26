@@ -5,6 +5,8 @@ using Newtonsoft.Json;
 
 namespace SimpleHabr.Models
 {
+    [BsonCollection("Comments")]
+
     public class Comment: Document
     {
         [BsonRepresentation(BsonType.ObjectId)]

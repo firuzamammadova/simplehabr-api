@@ -4,6 +4,7 @@ using MongoDB.Bson;
 
 namespace SimpleHabr.Models
 {
+    [BsonCollection("Users")]
     public class User: Document
     {
 

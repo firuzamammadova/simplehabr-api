@@ -1,10 +1,14 @@
 ﻿using System;
 namespace SimpleHabr.Models
 {
-    public class Database_Settings
+    public class DatabaseSettings : IDatabaseSettings
     {
-        public Database_Settings()
-        {
-        }
+        public string ConnectionString { get ; set ; }
+        public string DatabaseName { get; set ; }
+    }
+    public interface IDatabaseSettings
+    {
+        string ConnectionString { get; set; }
+        string DatabaseName { get; set; }
     }
 }

@@ -6,6 +6,8 @@ using Newtonsoft.Json;
 
 namespace SimpleHabr.Models
 {
+    [BsonCollection("Posts")]
+
     public class Post: Document
     {
 

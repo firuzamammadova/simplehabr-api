@@ -1,10 +1,16 @@
 ﻿using System;
 namespace SimpleHabr.Models
 {
-    public class BsonCollectionAttribute
+
+    [AttributeUsage(AttributeTargets.Class, Inherited = false)]
+    public class BsonCollectionAttribute : Attribute
     {
-        public BsonCollectionAttribute()
+        public string CollectionName { get; }
+
+        public BsonCollectionAttribute(string collectionName)
         {
+            CollectionName = collectionName;
         }
+
     }
 }
