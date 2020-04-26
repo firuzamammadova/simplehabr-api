@@ -44,6 +44,7 @@ namespace SimpleHabr
 
 
             services.AddTransient<IAuthService, AuthService>();
+            services.AddTransient<IUnitOfWork, UnitOfWork>();
 
             services.AddControllers();
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(opt =>

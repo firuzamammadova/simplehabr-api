@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using MongoDB.Driver;
 using Newtonsoft.Json;
 
 namespace SimpleHabr.Models
@@ -14,6 +15,7 @@ namespace SimpleHabr.Models
         [BsonRepresentation(BsonType.ObjectId)]
         [JsonConverter(typeof(ObjectIdConverter))]
         public ObjectId UserId { get; set; }
+        public string Header { get; set; }
 
         public string PhotoUrl { get; set; }
 

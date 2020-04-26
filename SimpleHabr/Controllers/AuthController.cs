@@ -47,7 +47,7 @@ namespace SimpleHabr.Controllers
             {
                 Username = userForRegisterDto.Username,
             };
-
+            
             var createdUser = await _authService.Register(userToCreate, userForRegisterDto.Password);
 
             return StatusCode(201);
