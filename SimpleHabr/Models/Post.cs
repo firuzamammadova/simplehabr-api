@@ -23,6 +23,6 @@ namespace SimpleHabr.Models
 
         public DateTime SharedTime { get; set; }
 
-        public ICollection<Comment> Comments { get; set; }
+        public ICollection<ObjectId> Comments { get; set; }
     }
 }

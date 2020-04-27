@@ -43,7 +43,7 @@ namespace SimpleHabr
 
 
 
-            services.AddTransient<IAuthService, AuthService>();
+            //services.AddTransient<IAuthService, AuthService>();
             services.AddTransient<IUnitOfWork, UnitOfWork>();
 
             services.AddControllers();

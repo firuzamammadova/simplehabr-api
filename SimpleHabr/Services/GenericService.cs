@@ -12,14 +12,22 @@ namespace SimpleHabr.Services
     {
         private readonly IMongoCollection<TDocument> _collection;
 
-        public GenericService(IMongoCollection<TDocument> collection)
+        public GenericService(IMongoDatabase database)
         {
 
-            _collection = collection;
+
+            _collection = database.GetCollection<TDocument>(GetCollectionName(typeof(TDocument)));
         }
 
+        private protected string GetCollectionName(Type documentType)
+        {
+            return ((BsonCollectionAttribute)documentType.GetCustomAttributes(
+                    typeof(BsonCollectionAttribute),
+                    true)
+                .FirstOrDefault())?.CollectionName;
+        }
         public IQueryable<TDocument> GetAll() =>
-            _collection.Find(book => true).ToList().AsQueryable();
+                _collection.Find(book => true).ToList().AsQueryable();
 
         public TDocument Get(ObjectId id)
         {

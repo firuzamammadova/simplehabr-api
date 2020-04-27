@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using SimpleHabr.Models;
 using SimpleHabr.Services;
@@ -27,15 +28,12 @@ namespace SimpleHabr.Controllers
         public ActionResult GetPosts(string username)
         {
             //var posts = _uow.Posts(username).GetAll().ToList();
-            var client = new MongoClient("mongodb://localhost:27017");
-            var database = client.GetDatabase("SimpleHabrDb");
-            var collection = database.GetCollection<User>("Users");
-            var user = collection.Find(u => u.Username == username).FirstOrDefault();
+            var posts=_uow.Posts.Find(p => p.UserId == _uow.Users.GetUserId(username));
 
 
             //var postsToReturn = _mapper.Map<IEnumerable<PostDto>>(posts);
 
-            return Ok(user.Posts);
+            return Ok(posts);
         }
 
         [HttpPost]
@@ -51,19 +49,20 @@ namespace SimpleHabr.Controllers
             //    post.Photo.PublicId = currUploadImageDto.PublicId;
             //    post.Photo.Url = currUploadImageDto.Url;
             //}
+            var userid= _uow.Users.GetUserId(username);
+            post.UserId = userid;
 
-            var client = new MongoClient("mongodb://localhost:27017");
-            var database = client.GetDatabase("SimpleHabrDb");
-            var collection = database.GetCollection<User>("Users");
-            var user=collection.Find(u => u.Username == username).FirstOrDefault();
-            post.UserId = user.Id;
-           // user.Posts = new List<Post>();
-            user.Posts.Add(post);
-            collection.ReplaceOne(book => book.Id == user.Id, user);
+            _uow.Posts.Add(post);
+
+
+
+            var thepost = _uow.Posts.Find(p => p.Header == post.Header).FirstOrDefault();
+           _uow.Users.AddPost(userid, thepost.Id);
+  
 
             //collection.UpdateOne()
 
-            return Ok(post);
+            return Ok(thepost);
         }
         /*
         [HttpGet]

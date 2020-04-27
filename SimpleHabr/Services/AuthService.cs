@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using SimpleHabr.Models;
 
@@ -10,20 +12,28 @@ namespace SimpleHabr.Services
     {
         private readonly IMongoCollection<User> _users;
 
-        public AuthService(IDatabaseSettings settings)
+        public AuthService(IMongoDatabase database)
         {
-            var client = new MongoClient(settings.ConnectionString);
-            var database = client.GetDatabase(settings.DatabaseName);
 
             _users = database.GetCollection<User>("Users");
         }
 
-        private protected string GetCollectionName(Type documentType)
+        public ObjectId GetUserId(string username)
         {
-            return ((SimpleHabr.Models.BsonCollectionAttribute)documentType.GetCustomAttributes(
-                    typeof(BsonCollectionAttribute),
-                    true)
-                .FirstOrDefault())?.CollectionName;
+            return _users.Find(u => u.Username == username).FirstOrDefault().Id;
+        }
+        public User AddPost(ObjectId userId,ObjectId postId)
+        {
+            var theuser = _users.Find(u => u.Id == userId).FirstOrDefault();
+            if (theuser.Posts==null)
+            {
+                theuser.Posts = new List<ObjectId>();
+            }
+            theuser.Posts.Add(postId);
+            _users.ReplaceOne(book => book.Id == userId, theuser);
+            return theuser;
+
+
         }
         public async Task<User> Login(string userName, string password)
         {

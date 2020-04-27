@@ -17,18 +17,24 @@ namespace SimpleHabr.Services
         }
 
         private IGenericService<Post> _posts;
+        private IAuthService _users;
 
+        public IAuthService Users
+        {
+            get
+            {
+                return _users ?? (_users = new AuthService(database));
+            }
+        }
 
+        public IGenericService<Post> Posts
+        {
+            get
+            {
+                return _posts ?? (_posts = new GenericService<Post>(database));
+            }
 
-
-        //public IGenericService<Post> Posts(string username)
-       // {
-           // var oid = new ObjectId(id);
-            //var _collection = database.GetCollection<User>("Users").Find(u=>u.Username==username).FirstOrDefault().Posts;
-            
-           // return _posts ?? (_posts = new GenericService<Post>(_collection));
-
-       // }
+        }
 
     }
 }

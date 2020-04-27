@@ -5,7 +5,9 @@ namespace SimpleHabr.Services
 {
     public interface IUnitOfWork
     {
-        //IGenericService<Post> Posts(string id);
+        IGenericService<Post> Posts { get; }
+        IAuthService Users { get; }
+
 
     }
 }
