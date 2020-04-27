@@ -5,9 +5,9 @@ namespace SimpleHabr.Services
 {
     public interface IUnitOfWork
     {
-        IGenericService<Post> Posts { get; }
+        IPostService Posts { get; }
         IAuthService Users { get; }
-
+        IGenericService<Comment> Comments {get;}
 
     }
 }

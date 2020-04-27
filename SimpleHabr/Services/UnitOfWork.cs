@@ -16,9 +16,9 @@ namespace SimpleHabr.Services
             database = client.GetDatabase(_settings.DatabaseName);
         }
 
-        private IGenericService<Post> _posts;
+        private IPostService _posts;
         private IAuthService _users;
-
+        private IGenericService<Comment> _comments;
         public IAuthService Users
         {
             get
@@ -27,13 +27,20 @@ namespace SimpleHabr.Services
             }
         }
 
-        public IGenericService<Post> Posts
+        public IPostService Posts
         {
             get
             {
-                return _posts ?? (_posts = new GenericService<Post>(database));
+                return _posts ?? (_posts = new PostService(database));
             }
 
+        }
+        public IGenericService<Comment> Comments
+        {
+            get
+            {
+                return _comments ?? (_comments = new GenericService<Comment>(database));
+            }
         }
 
     }

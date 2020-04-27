@@ -9,8 +9,6 @@ namespace SimpleHabr.Models
 
     public class Comment: Document
     {
-        [BsonRepresentation(BsonType.ObjectId)]
-        [JsonConverter(typeof(ObjectIdConverter))]
         public ObjectId PostId { get; set; }
 
         public string Text { get; set; }

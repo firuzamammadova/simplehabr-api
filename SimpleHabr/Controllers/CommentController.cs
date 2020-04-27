@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
-using MongoDB.Driver;
 using SimpleHabr.Models;
 using SimpleHabr.Services;
 
@@ -14,55 +13,48 @@ namespace SimpleHabr.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class PostController : Controller
+    public class CommentController : Controller
     {
         private readonly IUnitOfWork _uow;
 
-        public PostController(IUnitOfWork uow)
+        public CommentController(IUnitOfWork uow)
         {
             _uow = uow;
         }
 
         [HttpGet]
-        [Route("getposts/{username}")]
-        public ActionResult GetPosts(string username)
+        [Route("getcomments/{postId}")]
+        public ActionResult GetComments(string postId)
         {
             //var posts = _uow.Posts(username).GetAll().ToList();
-            var posts=_uow.Posts.Find(p => p.UserId == _uow.Users.GetUserId(username));
+            var comments = _uow.Comments.Find(p => p.PostId == new ObjectId(postId));
 
 
             //var postsToReturn = _mapper.Map<IEnumerable<PostDto>>(posts);
 
-            return Ok(posts);
+            return Ok(comments);
         }
 
         [HttpPost]
-        [Route("sharepost/{username}")]
-        public ActionResult SharePost(string username,[FromBody]Post post)
+        [Route("addcomment/{postId}")]
+        public ActionResult AddComment(string postId, [FromBody]Comment comment)
         {
 
-            //var currUploadImageDto = CloudinaryMethods.UploadImageToCloudinary(uploadImageDto);
-
-            //if (currUploadImageDto.File.Length > 0)
-            //{
-            //    post.Photo = new Image();
-            //    post.Photo.PublicId = currUploadImageDto.PublicId;
-            //    post.Photo.Url = currUploadImageDto.Url;
-            //}
-            var userid= _uow.Users.GetUserId(username);
-            post.UserId = userid;
-
-            _uow.Posts.Add(post);
+         
+           
+            comment.PostId =new ObjectId( postId);
+            
+            _uow.Comments.Add(comment);
 
 
 
-            var thepost = _uow.Posts.Find(p => p.Header == post.Header).FirstOrDefault();
-           _uow.Users.AddPost(userid, thepost.Id);
-  
+            var thecomment = _uow.Comments.Find(p => p.Text == comment.Text).FirstOrDefault();
+            _uow.Posts.AddComment(new ObjectId(postId), thecomment.Id);
+
 
             //collection.UpdateOne()
 
-            return Ok(thepost.Id.ToString());
+            return Ok(thecomment);
         }
         /*
         [HttpGet]

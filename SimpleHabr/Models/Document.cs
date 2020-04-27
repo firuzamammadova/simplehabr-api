@@ -12,9 +12,7 @@ namespace SimpleHabr.Models
 
     public interface IDocument
     {
-        [BsonId]
-        [BsonRepresentation(BsonType.ObjectId)]
-        [JsonConverter(typeof(ObjectIdConverter))]
+        //[BsonId]
         ObjectId Id { get; set; }
     }
 }

@@ -12,8 +12,6 @@ namespace SimpleHabr.Models
     public class Post: Document
     {
 
-        [BsonRepresentation(BsonType.ObjectId)]
-        [JsonConverter(typeof(ObjectIdConverter))]
         public ObjectId UserId { get; set; }
         public string Header { get; set; }
 

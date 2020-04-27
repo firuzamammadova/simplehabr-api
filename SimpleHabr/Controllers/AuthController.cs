@@ -21,10 +21,10 @@ namespace SimpleHabr.Controllers
     public class AuthController : Controller
     {
 
-        private readonly IAuthService _authService;
+        private readonly IUnitOfWork _authService;
         private readonly IConfiguration _configuration;
 
-        public AuthController(IAuthService authService, IConfiguration configuration)
+        public AuthController(IUnitOfWork authService, IConfiguration configuration)
         {
             _authService = authService;
             _configuration = configuration;
@@ -33,7 +33,7 @@ namespace SimpleHabr.Controllers
         [HttpPost("register")]
         public async Task<ActionResult> Register([FromBody]UserForRegisterDto userForRegisterDto)
         {
-            if (await _authService.UserExists(userForRegisterDto.Username))
+            if (await _authService.Users.UserExists(userForRegisterDto.Username))
             {
                 ModelState.AddModelError("Username", "Username already exists");
             }
@@ -48,7 +48,7 @@ namespace SimpleHabr.Controllers
                 Username = userForRegisterDto.Username,
             };
             
-            var createdUser = await _authService.Register(userToCreate, userForRegisterDto.Password);
+            var createdUser = await _authService.Users.Register(userToCreate, userForRegisterDto.Password);
 
             return StatusCode(201);
 
@@ -59,7 +59,7 @@ namespace SimpleHabr.Controllers
         public async Task<ActionResult> Login([FromBody]UserForLoginDto userForLoginDto)
         {
 
-            var user = await _authService.Login(userForLoginDto.Username, userForLoginDto.Password);
+            var user = await _authService.Users.Login(userForLoginDto.Username, userForLoginDto.Password);
 
             if (user == null)
             {
