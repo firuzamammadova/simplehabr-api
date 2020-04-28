@@ -37,8 +37,8 @@ namespace SimpleHabr.Controllers
         }
 
         [HttpPost]
-        [Route("sharepost/{username}")]
-        public ActionResult SharePost(string username,[FromBody]Post post)
+        [Route("sharepost")]
+        public ActionResult SharePost([FromBody]Post post)
         {
 
             //var currUploadImageDto = CloudinaryMethods.UploadImageToCloudinary(uploadImageDto);
@@ -49,7 +49,7 @@ namespace SimpleHabr.Controllers
             //    post.Photo.PublicId = currUploadImageDto.PublicId;
             //    post.Photo.Url = currUploadImageDto.Url;
             //}
-            var userid= _uow.Users.GetUserId(username);
+            var userid= _uow.Users.GetUserId(User.Identity.Name);
             post.UserId = userid;
 
             _uow.Posts.Add(post);

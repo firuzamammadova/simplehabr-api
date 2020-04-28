@@ -33,7 +33,6 @@ namespace SimpleHabr
         {
             var key = Encoding.ASCII.GetBytes(Configuration.GetSection("AppSettings:Token").Value);
 
-            services.AddMvc(option => option.EnableEndpointRouting = false);
 
             services.Configure<DatabaseSettings>(
         Configuration.GetSection(nameof(DatabaseSettings)));
@@ -46,8 +45,15 @@ namespace SimpleHabr
             //services.AddTransient<IAuthService, AuthService>();
             services.AddTransient<IUnitOfWork, UnitOfWork>();
 
+      
+
             services.AddControllers();
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(opt =>
+
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(opt =>
             {
                 opt.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
                 {
@@ -56,7 +62,14 @@ namespace SimpleHabr
                     IssuerSigningKey = new SymmetricSecurityKey(key),
                     ValidateIssuer = false,
                     ValidateAudience = false,
+                    ValidateLifetime = false
                 };
+            });
+            services.AddMvc(option => option.EnableEndpointRouting = false);
+
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "API", Version = "v1" });
             });
         }
 
@@ -78,7 +91,16 @@ namespace SimpleHabr
 
             app.UseRouting();
 
-            app.UseAuthorization();
+            //app.UseAuthorization();
+            app.UseAuthentication();
+
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("../swagger/v1/swagger.json", "MyAPI V1");
+                c.RoutePrefix = string.Empty;
+            });
+
 
             app.UseMvc(routes =>
             {

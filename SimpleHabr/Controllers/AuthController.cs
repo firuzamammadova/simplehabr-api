@@ -72,7 +72,6 @@ namespace SimpleHabr.Controllers
             var tokenDescriptor = new SecurityTokenDescriptor()
             {
                 Subject = new System.Security.Claims.ClaimsIdentity(new Claim[] {
-                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                     new Claim(ClaimTypes.Name, user.Username.ToString())
 
                 }),
