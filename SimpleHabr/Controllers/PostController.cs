@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using SimpleHabr.DTOs;
 using SimpleHabr.Models;
 using SimpleHabr.Services;
 
@@ -24,56 +25,63 @@ namespace SimpleHabr.Controllers
         }
 
         [HttpGet]
-        [Route("getposts/{username}")]
-        public ActionResult GetPosts(string username)
+        [Route("getuserposts")]
+        public ActionResult GetUserPosts()
         {
-            //var posts = _uow.Posts(username).GetAll().ToList();
-            var posts=_uow.Posts.Find(p => p.UserId == _uow.Users.GetUserId(username));
-
-
-            //var postsToReturn = _mapper.Map<IEnumerable<PostDto>>(posts);
-
+            var posts = _uow.Posts.Find(p => p.UserId == _uow.Users.GetUserId(User.Identity.Name));
             return Ok(posts);
+        }
+        [HttpGet]
+        [Route("getallposts")]
+        public ActionResult GetAllPosts()
+        {
+            var posts = _uow.Posts.GetAll(); return Ok(posts);
         }
 
         [HttpPost]
         [Route("sharepost")]
         public ActionResult SharePost([FromBody]Post post)
         {
-
-            //var currUploadImageDto = CloudinaryMethods.UploadImageToCloudinary(uploadImageDto);
-
-            //if (currUploadImageDto.File.Length > 0)
-            //{
-            //    post.Photo = new Image();
-            //    post.Photo.PublicId = currUploadImageDto.PublicId;
-            //    post.Photo.Url = currUploadImageDto.Url;
-            //}
-            var userid= _uow.Users.GetUserId(User.Identity.Name);
+            var userid = _uow.Users.GetUserId(User.Identity.Name);
             post.UserId = userid;
 
             _uow.Posts.Add(post);
 
-
-
             var thepost = _uow.Posts.Find(p => p.Header == post.Header).FirstOrDefault();
-           _uow.Users.AddPost(userid, thepost.Id);
-  
-
-            //collection.UpdateOne()
+            _uow.Users.AddPost(userid, thepost.Id);
 
             return Ok(thepost.Id.ToString());
         }
-        /*
+
         [HttpGet]
         [Route("detail/{id}")]
-        public ActionResult GetPostById(int id)
+        public ActionResult GetPostById(string id)
         {
-            var post = _context.Posts.Include(c => c.Comments).ThenInclude(c => c.User).Include(u => u.User).Include(p => p.Photo).FirstOrDefault(i => i.Id == id);
+            var post = _uow.Posts.Get(new ObjectId(id));
 
-            var postToReturn = _mapper.Map<PostDetailsDto>(post);
+            return Ok(post);
+        }
 
-            return Ok(postToReturn);
-        }*/
+        [HttpDelete]
+        [Route("deletepost/{id}")]
+        public ActionResult DeletePost(string id)
+        {
+            var postId = new ObjectId(id);
+            _uow.Posts.Delete(_uow.Posts.Get(postId));
+            _uow.Users.DeletePost(_uow.Users.GetUserId(User.Identity.Name), postId);
+            return Ok();
+        }
+        [HttpPost]
+        [Route("editpost")]
+        public ActionResult EditPost([FromBody]PostDto post)
+        {
+            var thepost = _uow.Posts.Get(new ObjectId(post.Id));
+            thepost.PhotoUrl = post.PhotoUrl;
+            thepost.SharedTime = post.SharedTime;
+            thepost.Text = post.Text;
+            thepost.Header = post.Header;
+            _uow.Posts.Edit(thepost);
+            return Ok(post);
+        }
     }
 }

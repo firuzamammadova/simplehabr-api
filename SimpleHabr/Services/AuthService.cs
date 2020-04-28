@@ -22,7 +22,7 @@ namespace SimpleHabr.Services
         {
             return _users.Find(u => u.Username == username).FirstOrDefault().Id;
         }
-        public User AddPost(ObjectId userId,ObjectId postId)
+        public void AddPost(ObjectId userId,ObjectId postId)
         {
             var theuser = _users.Find(u => u.Id == userId).FirstOrDefault();
             if (theuser.Posts==null)
@@ -31,7 +31,19 @@ namespace SimpleHabr.Services
             }
             theuser.Posts.Add(postId);
             _users.ReplaceOne(book => book.Id == userId, theuser);
-            return theuser;
+           
+
+
+        }
+        public void DeletePost(ObjectId userId, ObjectId postId)
+        {
+            var theuser = _users.Find(u => u.Id == userId).FirstOrDefault();
+            if (theuser.Posts != null)
+            {
+                theuser.Posts.Remove(postId);
+            }
+            _users.ReplaceOne(user => user.Id == userId, theuser);
+            
 
 
         }
