@@ -17,7 +17,10 @@ namespace SimpleHabr.Services
 
             _users = database.GetCollection<User>("Users");
         }
-
+        public string GetUsername(ObjectId id)
+        {
+            return _users.Find(i => i.Id == id).FirstOrDefault().Username;
+        }
         public ObjectId GetUserId(string username)
         {
             return _users.Find(u => u.Username == username).FirstOrDefault().Id;

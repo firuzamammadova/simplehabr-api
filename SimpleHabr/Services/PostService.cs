@@ -27,5 +27,15 @@ namespace SimpleHabr.Services
             _posts.ReplaceOne(book => book.Id == postId, thepost);
             return thepost;
         }
+        public void UpdateComments(ObjectId postId, List<ObjectId> commentIds)
+        {
+            var thepost = _posts.Find(u => u.Id == postId).FirstOrDefault();
+            if (thepost.Comments == null)
+            {
+                thepost.Comments = new List<ObjectId>();
+            }
+            thepost.Comments = commentIds;
+            _posts.ReplaceOne(book => book.Id == postId, thepost);
+        }
     }
 }

@@ -44,23 +44,61 @@ namespace SimpleHabr.Controllers
         public ActionResult AddComment(string postId, [FromBody]Comment thecomment)
         {
 
-            var userid = _uow.Users.GetUserId(User.Identity.Name);
+            var userid = new ObjectId(User.Claims.ToList().FirstOrDefault(i => i.Type == "UserId").Value);
 
 
             thecomment.PostId =new ObjectId(postId);
+            thecomment.SharedTime = DateTime.Now;
             //var thecomment = _mapper.Map<Comment>(comment);
             thecomment.UserId = userid;
             _uow.Comments.Add(thecomment);
 
 
 
-            thecomment = _uow.Comments.Find(p => p.Text == thecomment.Text).FirstOrDefault();
-            _uow.Posts.AddComment(new ObjectId(postId), thecomment.Id);
-
+            _uow.Posts.UpdateComments(thecomment.PostId,
+                _uow.Comments.GetAll().
+                Where(i => i.PostId == thecomment.PostId && i.UserId == userid).
+                Select(i => i.Id).
+                ToList()
+                );
 
             //collection.UpdateOne()
 
             return Ok(thecomment);
+        }
+
+        [HttpDelete]
+        [Route("/deletecomment/{id}")]
+        public ActionResult DeleteComment(string commentid)
+        {
+            var id = new ObjectId(commentid);
+            var thecomment = _uow.Comments.Get(id);
+            var userid = new ObjectId(User.Claims.ToList().FirstOrDefault(i => i.Type == "UserId").Value);
+
+            _uow.Posts.UpdateComments(thecomment.PostId,
+               _uow.Comments.GetAll().
+               Where(i => i.PostId == thecomment.PostId && i.UserId == userid).
+               Select(i => i.Id).
+               ToList()
+               );
+            return Ok();
+        }
+        [HttpGet]
+        [Route("getusercomments")]
+        public ActionResult GetUserComments()
+        {
+            var userid= new ObjectId(User.Claims.ToList().FirstOrDefault(i => i.Type == "UserId").Value);
+            var comments = _uow.Comments.GetAll().Where(i => i.UserId == userid);
+            var commentstoReturn = _mapper.Map<IEnumerable<CommentDto>>(comments);
+            return Ok(commentstoReturn);
+        }
+        [HttpPost]
+        [Route("editcomment/{id}")]
+        public ActionResult EditComment([FromBody]CommentDto comment)
+        {
+            Comment thecomment = _mapper.Map<Comment>(comment);
+            _uow.Comments.Edit(thecomment);
+            return Ok(comment);
         }
         /*
         [HttpGet]

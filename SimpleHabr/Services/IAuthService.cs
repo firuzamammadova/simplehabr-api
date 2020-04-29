@@ -9,6 +9,7 @@ namespace SimpleHabr.Services
     public interface IAuthService
     {
         ObjectId GetUserId(string username);
+        string GetUsername(ObjectId id);
         void AddPost(ObjectId userId, ObjectId postId);
         void DeletePost(ObjectId userId, ObjectId postId);
         void UpdatePosts(ObjectId userId, List<ObjectId> postIds);

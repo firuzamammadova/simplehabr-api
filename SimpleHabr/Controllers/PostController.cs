@@ -50,7 +50,7 @@ namespace SimpleHabr.Controllers
         {
             var userid = new ObjectId(User.Claims.ToList().FirstOrDefault(i=>i.Type=="UserId").Value);
             thepost.UserId = userid;
-
+            thepost.SharedTime = DateTime.Now;
             _uow.Posts.Add(thepost);
             _uow.Users.UpdatePosts(userid, _uow.Posts.GetAll().Where(i => i.UserId == userid).Select(i => i.Id).ToList());
             return Ok(thepost.Id.ToString());
@@ -88,7 +88,7 @@ namespace SimpleHabr.Controllers
         {
             var postId = new ObjectId(id);
             _uow.Posts.Delete(_uow.Posts.Get(postId));
-            _uow.Users.DeletePost(_uow.Users.GetUserId(User.Identity.Name), postId);
+            _uow.Users.DeletePost(new ObjectId(User.Claims.ToList().FirstOrDefault(i => i.Type == "UserId").Value), postId);
 
             return Ok();
         }

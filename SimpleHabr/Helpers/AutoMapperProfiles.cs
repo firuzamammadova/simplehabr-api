@@ -46,7 +46,33 @@ namespace SimpleHabr.Helpers
                        opt.MapFrom(src => new ObjectId(src.UserId));
                    }).ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
 
+            /* CreateMap<Post, PostDto>()
+                .ForMember(dest => dest.Id, opt =>
+                {
+                    opt.MapFrom(src => src.Id.ToString());
+                }).ForMember(dest => dest.Comments, opt =>
+               {
+                   opt.MapFrom(src => src.Comments == null ? new List<string>() : src.Comments.Select(i => i.ToString()));
 
+               }).ForMember(dest => dest.Username, opt =>
+                {
+                    opt.MapFrom(src => uow.Users.GetUsername( src.UserId));
+                }).ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
+
+            CreateMap<PostDto, Post>()
+                   .ForMember(dest => dest.Id, opt =>
+                   {
+                       opt.MapFrom(src => new ObjectId(src.Id));
+                   }).ForMember(dest => dest.Comments, opt =>
+                   {
+                       opt.MapFrom(src => src.Comments == null ? new List<ObjectId>() : src.Comments.Select(i => new ObjectId(i)));
+
+                   }).ForMember(dest => dest.UserId, opt =>
+                   {
+                       opt.MapFrom(src => uow.Users.GetUserId(src.Username));
+                   }).ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
+
+*/
 
             CreateMap<Comment, CommentDto>()
                 .ForMember(dest => dest.Id, opt =>
