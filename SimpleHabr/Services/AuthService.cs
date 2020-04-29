@@ -30,9 +30,20 @@ namespace SimpleHabr.Services
                 theuser.Posts = new List<ObjectId>();
             }
             theuser.Posts.Add(postId);
-            _users.ReplaceOne(book => book.Id == userId, theuser);
+            _users.ReplaceOne(user => user.Id == userId, theuser);
            
+            
 
+        }
+        public void UpdatePosts(ObjectId userId, List<ObjectId> postIds)
+        {
+            var theuser = _users.Find(u => u.Id == userId).FirstOrDefault();
+            if (theuser.Posts == null)
+            {
+                theuser.Posts = new List<ObjectId>();
+            }
+            theuser.Posts = postIds;
+            _users.ReplaceOne(user => user.Id == userId, theuser);
 
         }
         public void DeletePost(ObjectId userId, ObjectId postId)

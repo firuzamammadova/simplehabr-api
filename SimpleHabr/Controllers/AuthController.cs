@@ -72,7 +72,8 @@ namespace SimpleHabr.Controllers
             var tokenDescriptor = new SecurityTokenDescriptor()
             {
                 Subject = new System.Security.Claims.ClaimsIdentity(new Claim[] {
-                    new Claim(ClaimTypes.Name, user.Username.ToString())
+                    new Claim(ClaimTypes.Name, user.Username.ToString()),
+                    new Claim("UserId",user.Id.ToString())
 
                 }),
                 Expires = DateTime.Now.AddDays(1),

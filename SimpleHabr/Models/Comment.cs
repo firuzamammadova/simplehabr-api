@@ -10,6 +10,8 @@ namespace SimpleHabr.Models
     public class Comment: Document
     {
         public ObjectId PostId { get; set; }
+        public ObjectId UserId { get; set; }
+
 
         public string Text { get; set; }
 

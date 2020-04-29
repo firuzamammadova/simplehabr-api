@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
+using SimpleHabr.DTOs;
 using SimpleHabr.Models;
 using SimpleHabr.Services;
 
@@ -16,10 +18,12 @@ namespace SimpleHabr.Controllers
     public class CommentController : Controller
     {
         private readonly IUnitOfWork _uow;
+        private IMapper _mapper;
 
-        public CommentController(IUnitOfWork uow)
+        public CommentController(IUnitOfWork uow, IMapper mapper)
         {
             _uow = uow;
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -30,25 +34,27 @@ namespace SimpleHabr.Controllers
             var comments = _uow.Comments.Find(p => p.PostId == new ObjectId(postId));
 
 
-            //var postsToReturn = _mapper.Map<IEnumerable<PostDto>>(posts);
+            var commentstoReturn = _mapper.Map<IEnumerable<CommentDto>>(comments);
 
-            return Ok(comments);
+            return Ok(commentstoReturn);
         }
 
         [HttpPost]
         [Route("addcomment/{postId}")]
-        public ActionResult AddComment(string postId, [FromBody]Comment comment)
+        public ActionResult AddComment(string postId, [FromBody]Comment thecomment)
         {
 
-         
-           
-            comment.PostId =new ObjectId( postId);
-            
-            _uow.Comments.Add(comment);
+            var userid = _uow.Users.GetUserId(User.Identity.Name);
+
+
+            thecomment.PostId =new ObjectId(postId);
+            //var thecomment = _mapper.Map<Comment>(comment);
+            thecomment.UserId = userid;
+            _uow.Comments.Add(thecomment);
 
 
 
-            var thecomment = _uow.Comments.Find(p => p.Text == comment.Text).FirstOrDefault();
+            thecomment = _uow.Comments.Find(p => p.Text == thecomment.Text).FirstOrDefault();
             _uow.Posts.AddComment(new ObjectId(postId), thecomment.Id);
 
 
