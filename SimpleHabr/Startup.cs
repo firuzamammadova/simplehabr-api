@@ -16,6 +16,8 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using SimpleHabr.Models;
 using SimpleHabr.Services;
+using AutoMapper;
+using SimpleHabr.Helpers;
 
 namespace SimpleHabr
 {
@@ -66,7 +68,13 @@ namespace SimpleHabr
                 };
             });
             services.AddMvc(option => option.EnableEndpointRouting = false);
+            var mappingConfig = new MapperConfiguration(mc =>
+            {
+                mc.AddProfile(new AutoMapperProfiles());
+            });
 
+            IMapper mapper = mappingConfig.CreateMapper();
+            services.AddSingleton(mapper);
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "API", Version = "v1" });

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -18,10 +19,12 @@ namespace SimpleHabr.Controllers
     public class PostController : Controller
     {
         private readonly IUnitOfWork _uow;
+        private IMapper _mapper;
 
-        public PostController(IUnitOfWork uow)
+        public PostController(IUnitOfWork uow,IMapper mapper)
         {
             _uow = uow;
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -29,25 +32,29 @@ namespace SimpleHabr.Controllers
         public ActionResult GetUserPosts()
         {
             var posts = _uow.Posts.Find(p => p.UserId == _uow.Users.GetUserId(User.Identity.Name));
-            return Ok(posts);
+            var postsToReturn = _mapper.Map<IEnumerable<PostDto>>(posts);
+            return Ok(postsToReturn);
         }
         [HttpGet]
         [Route("getallposts")]
         public ActionResult GetAllPosts()
         {
-            var posts = _uow.Posts.GetAll(); return Ok(posts);
+            var posts = _uow.Posts.GetAll();
+            var postsToReturn = _mapper.Map<IEnumerable<PostDto>>(posts);
+            return Ok(postsToReturn);
         }
 
         [HttpPost]
         [Route("sharepost")]
-        public ActionResult SharePost([FromBody]Post post)
+        public ActionResult SharePost([FromBody]PostDto post)
         {
             var userid = _uow.Users.GetUserId(User.Identity.Name);
-            post.UserId = userid;
+            Post thepost=_mapper.Map<Post>(post);
+            thepost.UserId = userid;
 
-            _uow.Posts.Add(post);
+            _uow.Posts.Add(thepost);
 
-            var thepost = _uow.Posts.Find(p => p.Header == post.Header).FirstOrDefault();
+             thepost = _uow.Posts.Find(p => p.Header == post.Header).FirstOrDefault();
             _uow.Users.AddPost(userid, thepost.Id);
 
             return Ok(thepost.Id.ToString());
@@ -58,8 +65,8 @@ namespace SimpleHabr.Controllers
         public ActionResult GetPostById(string id)
         {
             var post = _uow.Posts.Get(new ObjectId(id));
-
-            return Ok(post);
+            var thepost = _mapper.Map<PostDto>(post);
+            return Ok(thepost);
         }
 
         [HttpDelete]
@@ -75,11 +82,7 @@ namespace SimpleHabr.Controllers
         [Route("editpost")]
         public ActionResult EditPost([FromBody]PostDto post)
         {
-            var thepost = _uow.Posts.Get(new ObjectId(post.Id));
-            thepost.PhotoUrl = post.PhotoUrl;
-            thepost.SharedTime = post.SharedTime;
-            thepost.Text = post.Text;
-            thepost.Header = post.Header;
+            Post thepost = _mapper.Map<Post>(post);
             _uow.Posts.Edit(thepost);
             return Ok(post);
         }

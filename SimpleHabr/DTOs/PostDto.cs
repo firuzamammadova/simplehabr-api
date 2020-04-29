@@ -14,5 +14,7 @@ namespace SimpleHabr.DTOs
         public string Text { get; set; }
 
         public DateTime SharedTime { get; set; }
+        public ICollection<string> Comments { get; set; }
+
     }
 }
