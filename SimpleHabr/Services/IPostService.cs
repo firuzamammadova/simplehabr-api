@@ -9,5 +9,6 @@ namespace SimpleHabr.Services
     {
         Post AddComment(ObjectId postId, ObjectId commentId);
         void UpdateComments(ObjectId postId, List<ObjectId> commentIds);
+        void UpdateLikes(ObjectId postId, List<ObjectId> likeIds);
     }
 }

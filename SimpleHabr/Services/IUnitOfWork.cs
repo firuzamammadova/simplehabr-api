@@ -8,6 +8,7 @@ namespace SimpleHabr.Services
         IPostService Posts { get; }
         IAuthService Users { get; }
         IGenericService<Comment> Comments {get;}
+        IGenericService<Like> Likes { get; }
 
     }
 }

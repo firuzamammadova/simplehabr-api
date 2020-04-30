@@ -30,7 +30,6 @@ namespace SimpleHabr.Controllers
         [Route("getcomments/{postId}")]
         public ActionResult GetComments(string postId)
         {
-            //var posts = _uow.Posts(username).GetAll().ToList();
             var comments = _uow.Comments.Find(p => p.PostId == new ObjectId(postId));
 
 
@@ -49,7 +48,6 @@ namespace SimpleHabr.Controllers
 
             thecomment.PostId =new ObjectId(postId);
             thecomment.SharedTime = DateTime.Now;
-            //var thecomment = _mapper.Map<Comment>(comment);
             thecomment.UserId = userid;
             _uow.Comments.Add(thecomment);
 
@@ -57,27 +55,25 @@ namespace SimpleHabr.Controllers
 
             _uow.Posts.UpdateComments(thecomment.PostId,
                 _uow.Comments.GetAll().
-                Where(i => i.PostId == thecomment.PostId && i.UserId == userid).
+                Where(i => i.PostId == thecomment.PostId ).
                 Select(i => i.Id).
                 ToList()
                 );
-
-            //collection.UpdateOne()
 
             return Ok(thecomment);
         }
 
         [HttpDelete]
-        [Route("/deletecomment/{id}")]
+        [Route("deletecomment/{id}")]
         public ActionResult DeleteComment(string commentid)
         {
             var id = new ObjectId(commentid);
             var thecomment = _uow.Comments.Get(id);
             var userid = new ObjectId(User.Claims.ToList().FirstOrDefault(i => i.Type == "UserId").Value);
-
+            _uow.Comments.Delete(thecomment);
             _uow.Posts.UpdateComments(thecomment.PostId,
                _uow.Comments.GetAll().
-               Where(i => i.PostId == thecomment.PostId && i.UserId == userid).
+               Where(i => i.PostId == thecomment.PostId ).
                Select(i => i.Id).
                ToList()
                );
@@ -100,16 +96,6 @@ namespace SimpleHabr.Controllers
             _uow.Comments.Edit(thecomment);
             return Ok(comment);
         }
-        /*
-        [HttpGet]
-        [Route("detail/{id}")]
-        public ActionResult GetPostById(int id)
-        {
-            var post = _context.Posts.Include(c => c.Comments).ThenInclude(c => c.User).Include(u => u.User).Include(p => p.Photo).FirstOrDefault(i => i.Id == id);
 
-            var postToReturn = _mapper.Map<PostDetailsDto>(post);
-
-            return Ok(postToReturn);
-        }*/
     }
 }

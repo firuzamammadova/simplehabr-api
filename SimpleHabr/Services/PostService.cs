@@ -24,7 +24,7 @@ namespace SimpleHabr.Services
                 thepost.Comments = new List<ObjectId>();
             }
             thepost.Comments.Add(commentId);
-            _posts.ReplaceOne(book => book.Id == postId, thepost);
+            _posts.ReplaceOne(post => post.Id == postId, thepost);
             return thepost;
         }
         public void UpdateComments(ObjectId postId, List<ObjectId> commentIds)
@@ -35,7 +35,17 @@ namespace SimpleHabr.Services
                 thepost.Comments = new List<ObjectId>();
             }
             thepost.Comments = commentIds;
-            _posts.ReplaceOne(book => book.Id == postId, thepost);
+            _posts.ReplaceOne(post => post.Id == postId, thepost);
+        }
+        public void UpdateLikes(ObjectId postId, List<ObjectId> likeIds)
+        {
+            var thepost = _posts.Find(u => u.Id == postId).FirstOrDefault();
+            if (thepost.Likes == null)
+            {
+                thepost.Likes = new List<ObjectId>();
+            }
+            thepost.Likes = likeIds;
+            _posts.ReplaceOne(post => post.Id == postId, thepost);
         }
     }
 }

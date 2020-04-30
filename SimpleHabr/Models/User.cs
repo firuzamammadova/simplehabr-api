@@ -16,7 +16,6 @@ namespace SimpleHabr.Models
         public byte[] PasswordSalt { get; set; }
 
         public ICollection<ObjectId> Posts { get; set; }
-       // public ICollection<Like> Likes { get; set; }
 
 
     }

@@ -19,6 +19,7 @@ namespace SimpleHabr.Services
         private IPostService _posts;
         private IAuthService _users;
         private IGenericService<Comment> _comments;
+        private IGenericService<Like> _likes;
         public IAuthService Users
         {
             get
@@ -40,6 +41,13 @@ namespace SimpleHabr.Services
             get
             {
                 return _comments ?? (_comments = new GenericService<Comment>(database));
+            }
+        }
+        public IGenericService<Like> Likes
+        {
+            get
+            {
+                return _likes ?? (_likes = new GenericService<Like>(database));
             }
         }
 

@@ -11,15 +11,13 @@ namespace SimpleHabr.Helpers
 {
     public class AutoMapperProfiles : Profile
     {
-        private readonly IUnitOfWork _uow;
+
 
         public AutoMapperProfiles()
         {
-        }
 
-        public AutoMapperProfiles(IUnitOfWork uow)
-        {
-            _uow = uow;
+
+
             CreateMap<Post, PostDto>()
                 .ForMember(dest => dest.Id, opt =>
                 {
@@ -125,6 +123,18 @@ namespace SimpleHabr.Helpers
     {
         opt.MapFrom(src => new ObjectId(src.UserId));
     }).ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));*/
+
+
+
+
+
+
+            CreateMap<Like, LikeDto>()
+               .ForMember(dest => dest.Id, opt =>
+               {
+                   opt.MapFrom(src => src.Id.ToString());
+               }).ForMember(obj => obj.Username,
+                exp => exp.MapFrom<UsernameResolver>());
         }
     }
 }
