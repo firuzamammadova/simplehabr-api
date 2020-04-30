@@ -66,7 +66,7 @@ namespace SimpleHabr.Controllers
         }
 
         [HttpDelete]
-        [Route("deletecomment/{id}")]
+        [Route("deletecomment/{commentid}")]
         public ActionResult DeleteComment(string commentid)
         {
 
@@ -97,7 +97,7 @@ namespace SimpleHabr.Controllers
             return Ok(commentstoReturn);
         }
         [HttpPost]
-        [Route("editcomment/{id}")]
+        [Route("editcomment")]
         public ActionResult EditComment([FromBody]CommentDto comment)
         {
             var userid = new ObjectId(User.Claims.ToList().FirstOrDefault(i => i.Type == "UserId").Value);

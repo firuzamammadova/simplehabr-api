@@ -81,7 +81,7 @@ namespace SimpleHabr.Controllers
         }
 
         [HttpDelete]
-        [Route("dislike/{id}")]
+        [Route("dislike/{likeid}")]
         public ActionResult Deletelike(string likeid)
         {
 
