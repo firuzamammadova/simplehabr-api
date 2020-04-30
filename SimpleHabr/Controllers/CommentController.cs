@@ -45,40 +45,47 @@ namespace SimpleHabr.Controllers
 
             var userid = User.Claims.ToList().FirstOrDefault(i => i.Type == "UserId").Value;
 
-
-            thecomment.PostId =postId;
-            thecomment.SharedTime = DateTime.Now;
-            thecomment.UserId = userid;
-            var comment = _mapper.Map<Comment>(thecomment);
-            _uow.Comments.Add(comment);
-
+                thecomment.PostId = postId;
+                thecomment.SharedTime = DateTime.Now;
+                thecomment.UserId = userid;
+                var comment = _mapper.Map<Comment>(thecomment);
+                _uow.Comments.Add(comment);
 
 
-            _uow.Posts.UpdateComments(comment.PostId,
-                _uow.Comments.GetAll().
-                Where(i => i.PostId == comment.PostId ).
-                Select(i => i.Id).
-                ToList()
-                );
 
-            return Ok(thecomment);
+                _uow.Posts.UpdateComments(comment.PostId,
+                    _uow.Comments.GetAll().
+                    Where(i => i.PostId == comment.PostId).
+                    Select(i => i.Id).
+                    ToList()
+                    );
+
+                return Ok(thecomment);
+         
+           
         }
 
         [HttpDelete]
         [Route("deletecomment/{id}")]
         public ActionResult DeleteComment(string commentid)
         {
+
             var id = new ObjectId(commentid);
             var thecomment = _uow.Comments.Get(id);
             var userid = new ObjectId(User.Claims.ToList().FirstOrDefault(i => i.Type == "UserId").Value);
-            _uow.Comments.Delete(thecomment);
-            _uow.Posts.UpdateComments(thecomment.PostId,
-               _uow.Comments.GetAll().
-               Where(i => i.PostId == thecomment.PostId ).
-               Select(i => i.Id).
-               ToList()
-               );
-            return Ok();
+            if (thecomment.UserId == userid || _uow.Posts.Get(thecomment.PostId).UserId==userid)
+            {
+                _uow.Comments.Delete(thecomment);
+                _uow.Posts.UpdateComments(thecomment.PostId,
+                   _uow.Comments.GetAll().
+                   Where(i => i.PostId == thecomment.PostId).
+                   Select(i => i.Id).
+                   ToList()
+                   );
+                return Ok();
+            }
+            else return Unauthorized();
+            
         }
         [HttpGet]
         [Route("getusercomments")]
@@ -93,9 +100,15 @@ namespace SimpleHabr.Controllers
         [Route("editcomment/{id}")]
         public ActionResult EditComment([FromBody]CommentDto comment)
         {
+            var userid = new ObjectId(User.Claims.ToList().FirstOrDefault(i => i.Type == "UserId").Value);
+
             Comment thecomment = _mapper.Map<Comment>(comment);
-            _uow.Comments.Edit(thecomment);
-            return Ok(comment);
+            if (thecomment.UserId == userid)
+            {
+                _uow.Comments.Edit(thecomment);
+                return Ok(comment);
+            }
+            else return Unauthorized();
         }
 
     }

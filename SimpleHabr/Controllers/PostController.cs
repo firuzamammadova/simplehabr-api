@@ -71,19 +71,31 @@ namespace SimpleHabr.Controllers
         [Route("deletepost/{id}")]
         public ActionResult DeletePost(string id)
         {
+            var userId = new ObjectId(User.Claims.ToList().FirstOrDefault(i => i.Type == "UserId").Value);
             var postId = new ObjectId(id);
-            _uow.Posts.Delete(_uow.Posts.Get(postId));
-            _uow.Users.DeletePost(new ObjectId(User.Claims.ToList().FirstOrDefault(i => i.Type == "UserId").Value), postId);
+            var currPost = _uow.Posts.Get(postId);
+            if (currPost.UserId == userId)
+            {
+                _uow.Posts.Delete(currPost);
+                _uow.Users.DeletePost(userId, postId);
 
-            return Ok();
+                return Ok();
+            }
+            else return Unauthorized();
         }
         [HttpPost]
         [Route("editpost")]
         public ActionResult EditPost([FromBody]PostDetailDto post)
         {
+            var userId = new ObjectId(User.Claims.ToList().FirstOrDefault(i => i.Type == "UserId").Value);
+
             Post thepost = _mapper.Map<Post>(post);
-            _uow.Posts.Edit(thepost);
-            return Ok(post);
+            if (thepost.UserId == userId)
+            {
+                _uow.Posts.Edit(thepost);
+                return Ok(post);
+            }
+            else return Unauthorized();
         }
     }
 }

@@ -37,6 +37,19 @@ namespace SimpleHabr.Controllers
 
             return Ok(likestoReturn);
         }
+        [HttpGet]
+        [Route("getuserlikes")]
+        public ActionResult GetUserLikes()
+        {
+            var userid = new ObjectId(User.Claims.ToList().FirstOrDefault(i => i.Type == "UserId").Value);
+
+            var likes = _uow.Likes.Find(p => p.UserId == userid);
+
+
+            var likestoReturn = _mapper.Map<IEnumerable<LikeDto>>(likes);
+
+            return Ok(likestoReturn);
+        }
 
         [HttpPost]
         [Route("like/{postId}")]
@@ -44,40 +57,52 @@ namespace SimpleHabr.Controllers
         {
 
             var userid = new ObjectId(User.Claims.ToList().FirstOrDefault(i => i.Type == "UserId").Value);
-            var thelike = new Like();
 
-            thelike.PostId = new ObjectId(postId);
-            thelike.UserId = userid;
-            _uow.Likes.Add(thelike);
+            if (_uow.Likes.Find(i => i.PostId == new ObjectId(postId) && i.UserId == userid).Count() == 0)
+            {
+                var thelike = new Like();
+
+                thelike.PostId = new ObjectId(postId);
+                thelike.UserId = userid;
+                _uow.Likes.Add(thelike);
 
 
 
-            _uow.Posts.UpdateLikes(thelike.PostId,
-                _uow.Likes.GetAll().
-                Where(i => i.PostId == thelike.PostId).
-                Select(i => i.Id).
-                ToList()
-                );
+                _uow.Posts.UpdateLikes(thelike.PostId,
+                    _uow.Likes.GetAll().
+                    Where(i => i.PostId == thelike.PostId).
+                    Select(i => i.Id).
+                    ToList()
+                    );
 
-            return Ok();
+                return Ok();
+            }
+            else return Conflict();
         }
 
         [HttpDelete]
         [Route("dislike/{id}")]
         public ActionResult Deletelike(string likeid)
         {
+
+            var userid = new ObjectId(User.Claims.ToList().FirstOrDefault(i => i.Type == "UserId").Value);
+
             var id = new ObjectId(likeid);
             var thelike = _uow.Likes.Get(id);
-            var userid = new ObjectId(User.Claims.ToList().FirstOrDefault(i => i.Type == "UserId").Value);
-            _uow.Likes.Delete(thelike);
 
-            _uow.Posts.UpdateLikes(thelike.PostId,
-               _uow.Likes.GetAll().
-               Where(i => i.PostId == thelike.PostId ).
-               Select(i => i.Id).
-               ToList()
-               );
-            return Ok();
+            if (_uow.Likes.Find(i => i.PostId == thelike.PostId && i.UserId == userid).Count() == 0)
+            {
+                _uow.Likes.Delete(thelike);
+
+                _uow.Posts.UpdateLikes(thelike.PostId,
+                   _uow.Likes.GetAll().
+                   Where(i => i.PostId == thelike.PostId).
+                   Select(i => i.Id).
+                   ToList()
+                   );
+                return Ok();
+            }
+            else return Conflict();
         }
 
 
