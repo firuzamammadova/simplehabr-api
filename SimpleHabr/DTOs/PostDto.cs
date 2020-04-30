@@ -6,7 +6,7 @@ namespace SimpleHabr.DTOs
     public class PostDto
     {
         public string Id { get; set; }
-        public string Username { get; set; }
+        public string UserId { get; set; }
         public string Header { get; set; }
 
         public string PhotoUrl { get; set; }
@@ -15,7 +15,6 @@ namespace SimpleHabr.DTOs
 
         public DateTime SharedTime { get; set; }
         public ICollection<string> Comments { get; set; }
-        public int Likes { get; set; }
 
     }
 }

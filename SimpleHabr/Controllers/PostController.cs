@@ -46,14 +46,15 @@ namespace SimpleHabr.Controllers
 
         [HttpPost]
         [Route("sharepost")]
-        public ActionResult SharePost([FromBody]Post thepost)
+        public ActionResult SharePost([FromBody]PostDto thepost)
         {
             var userid = new ObjectId(User.Claims.ToList().FirstOrDefault(i=>i.Type=="UserId").Value);
-            thepost.UserId = userid;
+            thepost.UserId = userid.ToString();
             thepost.SharedTime = DateTime.Now;
-            _uow.Posts.Add(thepost);
+            var post = _mapper.Map<Post>(thepost);
+            _uow.Posts.Add(post);
             _uow.Users.UpdatePosts(userid, _uow.Posts.GetAll().Where(i => i.UserId == userid).Select(i => i.Id).ToList());
-            return Ok(thepost.Id.ToString());
+            return Ok();
         }
 
         [HttpGet]

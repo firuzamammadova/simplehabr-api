@@ -40,22 +40,23 @@ namespace SimpleHabr.Controllers
 
         [HttpPost]
         [Route("addcomment/{postId}")]
-        public ActionResult AddComment(string postId, [FromBody]Comment thecomment)
+        public ActionResult AddComment(string postId, [FromBody]CommentDto thecomment)
         {
 
-            var userid = new ObjectId(User.Claims.ToList().FirstOrDefault(i => i.Type == "UserId").Value);
+            var userid = User.Claims.ToList().FirstOrDefault(i => i.Type == "UserId").Value;
 
 
-            thecomment.PostId =new ObjectId(postId);
+            thecomment.PostId =postId;
             thecomment.SharedTime = DateTime.Now;
             thecomment.UserId = userid;
-            _uow.Comments.Add(thecomment);
+            var comment = _mapper.Map<Comment>(thecomment);
+            _uow.Comments.Add(comment);
 
 
 
-            _uow.Posts.UpdateComments(thecomment.PostId,
+            _uow.Posts.UpdateComments(comment.PostId,
                 _uow.Comments.GetAll().
-                Where(i => i.PostId == thecomment.PostId ).
+                Where(i => i.PostId == comment.PostId ).
                 Select(i => i.Id).
                 ToList()
                 );

@@ -19,19 +19,15 @@ namespace SimpleHabr.Helpers
 
 
      
-            /*
-            CreateMap<PostDto, Post>()
-                   .ForMember(dest => dest.Id, opt =>
-                   {
-                       opt.MapFrom(src => new ObjectId(src.Id));
-                   }).ForMember(dest => dest.Comments, opt =>
+            
+            CreateMap<PostDto, Post>().ForMember(dest => dest.Comments, opt =>
                    {
                        opt.MapFrom(src => src.Comments == null ? new List<ObjectId>() : src.Comments.Select(i => new ObjectId(i)));
 
                    }).ForMember(dest => dest.UserId, opt =>
                    {
-                       opt.MapFrom(src => new ObjectId(src.UserId));
-                   }).ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));*/
+                       opt.MapFrom(src=>new ObjectId(src.UserId));
+                   }).ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
 
              CreateMap<Post, PostDto>()
                 .ForMember(dest => dest.Id, opt =>
@@ -41,10 +37,10 @@ namespace SimpleHabr.Helpers
                {
                    opt.MapFrom(src => src.Comments == null ? new List<string>() : src.Comments.Select(i => i.ToString()));
 
-               }).ForMember(dest => dest.Username, opt =>
+               }).ForMember(dest => dest.UserId, opt =>
                 {
-                    opt.MapFrom<PostUsernameResolver>();
-                }).ForMember(dest=>dest.Likes,opt=>opt.MapFrom<PostLikeResolver>())
+                    opt.MapFrom(src=>src.UserId.ToString());
+                })
                .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
                 /*
             CreateMap<PostDto, Post>()
@@ -75,11 +71,7 @@ namespace SimpleHabr.Helpers
                   }).ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
 
             CreateMap<CommentDto, Comment>()
-               .ForMember(dest => dest.Id, opt =>
-               {
-                   opt.MapFrom(src => new ObjectId(src.Id));
-
-               }).ForMember(dest => dest.PostId, opt =>
+            .ForMember(dest => dest.PostId, opt =>
                {
                    opt.MapFrom(src => new ObjectId(src.PostId));
                }).ForMember(dest => dest.UserId, opt =>
