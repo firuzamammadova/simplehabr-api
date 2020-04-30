@@ -18,19 +18,8 @@ namespace SimpleHabr.Helpers
 
 
 
-            CreateMap<Post, PostDto>()
-                .ForMember(dest => dest.Id, opt =>
-                {
-                    opt.MapFrom(src => src.Id.ToString());
-                }).ForMember(dest => dest.Comments, opt =>
-               {
-                   opt.MapFrom(src => src.Comments == null ? new List<string>() : src.Comments.Select(i => i.ToString()));
-
-               }).ForMember(dest => dest.UserId, opt =>
-                {
-                    opt.MapFrom(src => src.UserId.ToString());
-                }).ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
-
+     
+            /*
             CreateMap<PostDto, Post>()
                    .ForMember(dest => dest.Id, opt =>
                    {
@@ -42,9 +31,9 @@ namespace SimpleHabr.Helpers
                    }).ForMember(dest => dest.UserId, opt =>
                    {
                        opt.MapFrom(src => new ObjectId(src.UserId));
-                   }).ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
+                   }).ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));*/
 
-            /* CreateMap<Post, PostDto>()
+             CreateMap<Post, PostDto>()
                 .ForMember(dest => dest.Id, opt =>
                 {
                     opt.MapFrom(src => src.Id.ToString());
@@ -54,9 +43,10 @@ namespace SimpleHabr.Helpers
 
                }).ForMember(dest => dest.Username, opt =>
                 {
-                    opt.MapFrom(src => uow.Users.GetUsername( src.UserId));
-                }).ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
-
+                    opt.MapFrom<PostUsernameResolver>();
+                }).ForMember(dest=>dest.Likes,opt=>opt.MapFrom<PostLikeResolver>())
+               .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
+                /*
             CreateMap<PostDto, Post>()
                    .ForMember(dest => dest.Id, opt =>
                    {
@@ -98,18 +88,18 @@ namespace SimpleHabr.Helpers
                }).ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
 
 
-            /*  CreateMap<Post, PostDetailDto>()
+              CreateMap<Post, PostDetailDto>()
                  .ForMember(dest => dest.Id, opt =>
                  {
                      opt.MapFrom(src => src.Id.ToString());
                  }).ForMember(dest => dest.Comments, opt =>
                  {
-                     opt.MapFrom(src => src.Comments == null ? new List<CommentDto>() : mapper.Map<IEnumerable<CommentDto>>(_uow.Comments.GetAll().Where(c => c.PostId == src.Id)));
+                     opt.MapFrom<ListCommentsResolver>();
 
-                 }).ForMember(dest => dest.UserId, opt =>
+                 }).ForMember(dest => dest.Username, opt =>
                  {
-                     opt.MapFrom(src => src.UserId.ToString());
-                 }).ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));*/
+                     opt.MapFrom<PostDetailUsernameResolver>();
+                 }).ForMember(dest => dest.Likes, opt => opt.MapFrom<PostDetailLikeResolver>()).ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
 
             /* CreateMap<PostDetailDto, Post>()
     .ForMember(dest => dest.Id, opt =>

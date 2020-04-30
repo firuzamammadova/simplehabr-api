@@ -32,7 +32,7 @@ namespace SimpleHabr.Controllers
         public ActionResult GetUserPosts()
         {
             var posts = _uow.Posts.Find(p => p.UserId == new ObjectId(User.Claims.ToList().FirstOrDefault(i => i.Type == "UserId").Value));
-            var postsToReturn = _mapper.Map<IEnumerable<PostDto>>(posts);
+            var postsToReturn = _mapper.Map<IEnumerable<PostDetailDto>>(posts);
             return Ok(postsToReturn);
         }
         [HttpGet]
@@ -40,7 +40,7 @@ namespace SimpleHabr.Controllers
         public ActionResult GetAllPosts()
         {
             var posts = _uow.Posts.GetAll();
-            var postsToReturn = _mapper.Map<IEnumerable<PostDto>>(posts);
+            var postsToReturn = _mapper.Map<IEnumerable<PostDetailDto>>(posts);
             return Ok(postsToReturn);
         }
 
@@ -61,23 +61,7 @@ namespace SimpleHabr.Controllers
         public ActionResult GetPostById(string id)
         {
             var post = _uow.Posts.Get(new ObjectId(id));
-            var thepost = new PostDetailDto()
-            {
-                Id = post.Id.ToString(),
-                Header = post.Header,
-                Text = post.Text,
-                SharedTime = post.SharedTime,
-                PhotoUrl = post.PhotoUrl,
-                Username= User.Identity.Name,
-                Comments = _uow.Comments.GetAll().Where(i => i.PostId == post.Id).Select(i => new CommentDto()
-                {
-                    Id = i.Id.ToString(),
-                    PostId = i.PostId.ToString(),
-                    UserId = i.UserId.ToString(),
-                    SharedTime = i.SharedTime,
-                    Text = i.Text
-                }).ToList()
-            };
+            var thepost = _mapper.Map<PostDetailDto>(post);
 
             return Ok(thepost);
         }
@@ -94,7 +78,7 @@ namespace SimpleHabr.Controllers
         }
         [HttpPost]
         [Route("editpost")]
-        public ActionResult EditPost([FromBody]PostDto post)
+        public ActionResult EditPost([FromBody]PostDetailDto post)
         {
             Post thepost = _mapper.Map<Post>(post);
             _uow.Posts.Edit(thepost);

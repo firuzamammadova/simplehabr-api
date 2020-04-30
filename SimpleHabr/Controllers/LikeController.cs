@@ -27,7 +27,7 @@ namespace SimpleHabr.Controllers
         }
 
         [HttpGet]
-        [Route("getclikes/{postId}")]
+        [Route("getlikes/{postId}")]
         public ActionResult GetLikes(string postId)
         {
             var likes = _uow.Likes.Find(p => p.PostId == new ObjectId(postId));
