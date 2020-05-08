@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
 using SimpleHabr.DTOs;
@@ -7,18 +8,23 @@ using SimpleHabr.Services;
 
 namespace SimpleHabr.Helpers
 {
-    public class PostDetailLikeResolver : IValueResolver<Post, PostDetailDto, int>
+    public class PostDetailLikeResolver : IValueResolver<Post, PostDetailDto, List<LikeDto>>
     {
 
         private IUnitOfWork _uow;
-
-        public PostDetailLikeResolver(IUnitOfWork uow) => _uow = uow;
-
+        private IMapper _mapper;
 
 
-        public int Resolve(Post source, PostDetailDto destination, int destMember, ResolutionContext context)
+        public PostDetailLikeResolver(IUnitOfWork uow ,IMapper mapper) { _uow = uow; _mapper = mapper; }
+
+
+
+        public List<LikeDto> Resolve(Post source, PostDetailDto destination, List<LikeDto> destMember, ResolutionContext context)
         {
-            return _uow.Likes.GetAll().Where(i => i.PostId == source.Id).Count();
+            var likes= _uow.Likes.GetAll().Where(i => i.PostId == source.Id);
+            return _mapper.Map<IEnumerable<LikeDto>>(likes).ToList();
         }
+
+       
     }
 }

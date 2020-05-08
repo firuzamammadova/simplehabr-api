@@ -16,7 +16,7 @@ namespace SimpleHabr.DTOs
 
         public DateTime SharedTime { get; set; }
         public ICollection<CommentDto> Comments { get; set; }
-        public int Likes { get; set; }
+        public List<LikeDto> Likes { get; set; }
 
     }
 }

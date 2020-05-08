@@ -68,7 +68,13 @@ namespace SimpleHabr
                 };
             });
             services.AddMvc(option => option.EnableEndpointRouting = false);
-
+            services.AddCors(options =>
+            {
+                options.AddPolicy("CorsPolicy",
+                    builder => builder.AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader());
+            });
             services.AddAutoMapper(typeof(Startup));
             services.AddSwaggerGen(c =>
             {
@@ -88,8 +94,10 @@ namespace SimpleHabr
             x.AllowAnyHeader()
             .AllowAnyMethod()
             .AllowAnyOrigin()
-            .AllowCredentials());
-            */
+            .AllowCredentials());*/
+
+            app.UseCors("CorsPolicy");
+
             app.UseHttpsRedirection();
 
             app.UseRouting();

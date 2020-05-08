@@ -31,7 +31,8 @@ namespace SimpleHabr.Controllers
         [Route("getuserposts")]
         public ActionResult GetUserPosts()
         {
-            var posts = _uow.Posts.Find(p => p.UserId == new ObjectId(User.Claims.ToList().FirstOrDefault(i => i.Type == "UserId").Value));
+            var userid = new ObjectId(User.Claims.ToList().FirstOrDefault(i => i.Type == "UserId").Value);
+            var posts = _uow.Posts.Find(p => p.UserId == userid);
             var postsToReturn = _mapper.Map<IEnumerable<PostDetailDto>>(posts);
             return Ok(postsToReturn);
         }
@@ -41,7 +42,7 @@ namespace SimpleHabr.Controllers
         {
             var posts = _uow.Posts.GetAll();
             var postsToReturn = _mapper.Map<IEnumerable<PostDetailDto>>(posts);
-            return Ok(postsToReturn);
+            return Ok(postsToReturn.OrderByDescending(d=>d.SharedTime));
         }
 
         [HttpPost]
@@ -81,7 +82,7 @@ namespace SimpleHabr.Controllers
 
                 return Ok();
             }
-            else return Unauthorized();
+            else return Conflict();
         }
         [HttpPost]
         [Route("editpost")]

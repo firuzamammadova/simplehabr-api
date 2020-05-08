@@ -81,17 +81,18 @@ namespace SimpleHabr.Controllers
         }
 
         [HttpDelete]
-        [Route("dislike/{likeid}")]
-        public ActionResult Deletelike(string likeid)
+        [Route("dislike/{postid}")]
+        public ActionResult Deletelike(string postid)
         {
 
             var userid = new ObjectId(User.Claims.ToList().FirstOrDefault(i => i.Type == "UserId").Value);
 
-            var id = new ObjectId(likeid);
-            var thelike = _uow.Likes.Get(id);
+            var id = new ObjectId(postid);
+            var thelike = _uow.Likes.Find(i => i.PostId == id && i.UserId == userid).FirstOrDefault();
 
-            if (_uow.Likes.Find(i => i.PostId == thelike.PostId && i.UserId == userid).Count() == 0)
+            if (_uow.Likes.Find(i => i.PostId == id && i.UserId == userid).Count() != 0)
             {
+
                 _uow.Likes.Delete(thelike);
 
                 _uow.Posts.UpdateLikes(thelike.PostId,
