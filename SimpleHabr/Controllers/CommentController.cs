@@ -39,15 +39,14 @@ namespace SimpleHabr.Controllers
         }
 
         [HttpPost]
-        [Route("addcomment/{postId}")]
-        public ActionResult AddComment(string postId, [FromBody]CommentDto thecomment)
+        [Route("addcomment")]
+        public ActionResult AddComment( [FromBody]CommentDto thecomment)
         {
 
-            var userid = User.Claims.ToList().FirstOrDefault(i => i.Type == "UserId").Value;
+            var username = User.Identity.Name;
 
-                thecomment.PostId = postId;
                 thecomment.SharedTime = DateTime.Now;
-                thecomment.UserId = userid;
+                thecomment.Username = username;
                 var comment = _mapper.Map<Comment>(thecomment);
                 _uow.Comments.Add(comment);
 
