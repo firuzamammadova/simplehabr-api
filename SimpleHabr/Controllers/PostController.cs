@@ -34,7 +34,16 @@ namespace SimpleHabr.Controllers
             var userid = new ObjectId(User.Claims.ToList().FirstOrDefault(i => i.Type == "UserId").Value);
             var posts = _uow.Posts.Find(p => p.UserId == userid);
             var postsToReturn = _mapper.Map<IEnumerable<PostDetailDto>>(posts);
-            return Ok(postsToReturn);
+            return Ok(postsToReturn.OrderByDescending(d => d.SharedTime));
+        }
+        [HttpGet]
+        [Route("getspecuserposts/{username}")]
+        public ActionResult GetSpecUserPosts(string username)
+        {
+            var userid = _uow.Users.GetUserId(username);
+            var posts = _uow.Posts.Find(p => p.UserId == userid);
+            var postsToReturn = _mapper.Map<IEnumerable<PostDetailDto>>(posts);
+            return Ok(postsToReturn.OrderByDescending(d => d.SharedTime));
         }
         [HttpGet]
         [Route("getallposts")]

@@ -93,7 +93,7 @@ namespace SimpleHabr.Controllers
             var userid= new ObjectId(User.Claims.ToList().FirstOrDefault(i => i.Type == "UserId").Value);
             var comments = _uow.Comments.GetAll().Where(i => i.UserId == userid);
             var commentstoReturn = _mapper.Map<IEnumerable<CommentDto>>(comments);
-            return Ok(commentstoReturn);
+            return Ok(commentstoReturn.OrderByDescending(d => d.SharedTime));
         }
         [HttpPost]
         [Route("editcomment")]
