@@ -50,6 +50,20 @@ namespace SimpleHabr.Controllers
 
             return Ok(likestoReturn);
         }
+        [HttpGet]
+        [Route("getspecuserlikes/{username}")]
+        public ActionResult GetSpecUserLikes(string username)
+        {
+            var userid = _uow.Users.GetUserId(username);
+
+            var likes = _uow.Likes.Find(p => p.UserId == userid);
+
+
+            var likestoReturn = _mapper.Map<IEnumerable<LikeDto>>(likes);
+
+            return Ok(likestoReturn);
+        }
+
 
         [HttpPost]
         [Route("like/{postId}")]

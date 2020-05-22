@@ -95,6 +95,15 @@ namespace SimpleHabr.Controllers
             var commentstoReturn = _mapper.Map<IEnumerable<CommentDto>>(comments);
             return Ok(commentstoReturn.OrderByDescending(d => d.SharedTime));
         }
+        [HttpGet]
+        [Route("getspecusercomments/{username}")]
+        public ActionResult GetSpecUserComments(string username)
+        {
+            var userid = _uow.Users.GetUserId(username);
+            var comments = _uow.Comments.GetAll().Where(i => i.UserId == userid);
+            var commentstoReturn = _mapper.Map<IEnumerable<CommentDto>>(comments);
+            return Ok(commentstoReturn.OrderByDescending(d => d.SharedTime));
+        }
         [HttpPost]
         [Route("editcomment")]
         public ActionResult EditComment([FromBody]CommentDto comment)

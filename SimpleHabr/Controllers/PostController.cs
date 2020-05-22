@@ -74,7 +74,7 @@ namespace SimpleHabr.Controllers
             var post = _uow.Posts.Get(new ObjectId(id));
             var thepost = _mapper.Map<PostDetailDto>(post);
 
-            return Ok(thepost);
+            return Ok(new { thepost });
         }
 
         [HttpDelete]
